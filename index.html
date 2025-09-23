@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Be Hero X - Interactive Experience</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'hero-red': '#FF3366',
+                        'hero-pink': '#FF6B9D',
+                        'hero-purple': '#8B5CF6',
+                        'hero-cyan': '#00F5FF',
+                        'hero-dark': '#0A0A0A',
+                        'hero-darker': '#000000',
+                        'hero-light': '#1A1A1A',
+                        'hero-gray': '#2A2A2A',
+                    },
+                    backgroundImage: {
+                        'hero-gradient': 'linear-gradient(135deg, #FF3366 0%, #8B5CF6 50%, #00F5FF 100%)',
+                        'hero-dark-gradient': 'linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%)',
+                        'hero-glow': 'radial-gradient(circle at center, rgba(255, 51, 102, 0.3) 0%, transparent 70%)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                    },
+                    fontFamily: {
+                        'hero': ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(255, 51, 102, 0.5); }
+            to { box-shadow: 0 0 40px rgba(139, 92, 246, 0.7); }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .glass-effect {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .text-glow {
+            text-shadow: 0 0 20px currentColor;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .hero-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hero-card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-hero-dark text-white font-hero overflow-x-hidden">
+    <div id="app">
+        <!-- Navbar -->
+        <nav class="fixed top-0 w-full z-50 glass-effect">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-2xl font-bold bg-hero-gradient bg-clip-text text-transparent">
+                            To Be Hero X
+                        </div>
+                        <div class="text-sm text-gray-300 hidden sm:block">
+                            To Be Hero X
+                        </div>
+                    </div>
+                    
+                    <div class="hidden md:flex space-x-8">
+                        <a v-for="item in navItems" :key="item.id" 
+                           @click="scrollToSection(item.id)"
+                           class="px-4 py-2 rounded-lg glass-effect hover:bg-hero-red hover:bg-opacity-20 transition-all cursor-pointer">
+                            <i :class="item.icon"></i>
+                            <span class="ml-2">{{ item.name }}</span>
+                        </a>
+                    </div>
+                    
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden glass-effect p-2 rounded-lg">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div v-show="mobileMenuOpen" class="md:hidden glass-effect border-t border-white border-opacity-20">
+                <div class="px-4 py-4 space-y-2">
+                    <a v-for="item in navItems" :key="item.id" 
+                       @click="scrollToSection(item.id); mobileMenuOpen = false"
+                       class="block px-4 py-2 rounded-lg hover:bg-hero-red hover:bg-opacity-20 transition-all cursor-pointer">
+                        <i :class="item.icon"></i>
+                        <span class="ml-2">{{ item.name }}</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-20 pb-12">
+            <div class="absolute inset-0 bg-hero-glow"></div>
+            <div class="absolute inset-0 bg-hero-dark-gradient opacity-90"></div>
+            
+            <div class="container mx-auto px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-2 gap-16 xl:gap-20 items-center">
+                    <div class="space-y-10 animate-slide-up">
+                        <div class="space-y-6">
+                            <h1 class="text-6xl lg:text-8xl font-black bg-hero-gradient bg-clip-text text-transparent animate-glow">
+                                To Be Hero X
+                            </h1>
+                            <h2 class="text-3xl lg:text-4xl font-bold text-hero-cyan text-glow">
+                                TO BE HERO X
+                            </h2>
+                            <p class="text-xl text-gray-300 leading-relaxed">
+                                <span class="text-hero-pink">Trust Creates Heroes</span>
+                            </p>
+                        </div>
+                        
+                        <p class="text-lg lg:text-xl text-gray-400 leading-relaxed max-w-2xl">
+                            In this world, a hero's power comes from the trust of the people. 
+                            Witness the most groundbreaking domestic animation in history and 
+                            experience an unprecedented superhero universe.
+                        </p>
+                        
+                        <div class="flex flex-col sm:flex-row flex-wrap gap-4 lg:gap-6">
+                            <button @click="scrollToSection('overview')" 
+                                    class="px-8 py-4 lg:px-10 lg:py-5 bg-hero-gradient rounded-full font-semibold text-lg hover:scale-105 transform transition-all duration-300 hover:shadow-xl hover:shadow-hero-red/30">
+                                <i class="fas fa-play mr-2"></i>
+                                Explore
+                            </button>
+                            <button @click="scrollToSection('heroes')" 
+                                    class="px-8 py-4 lg:px-10 lg:py-5 glass-effect rounded-full font-semibold text-lg hover:bg-hero-red hover:bg-opacity-30 transition-all duration-300">
+                                <i class="fas fa-users mr-2"></i>
+                                Heroes
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="relative animate-float">
+                        <div class="relative group">
+                            <img :src="mainPoster" alt="To Be Hero X" 
+                                 class="w-full h-auto rounded-3xl shadow-2xl group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-hero-gradient opacity-0 group-hover:opacity-20 rounded-3xl transition-opacity duration-500"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <i class="fas fa-chevron-down text-2xl text-hero-cyan"></i>
+            </div>
+        </section>
+
+        <!-- Overview Section -->
+        <section id="overview" class="py-24 lg:py-32 bg-hero-light relative">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <h2 class="text-5xl lg:text-6xl font-black bg-hero-gradient bg-clip-text text-transparent mb-6">
+                        Overview
+                    </h2>
+                    <p class="text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">Explore the groundbreaking work that changed domestic animation history</p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="space-y-8">
+                        <div class="glass-effect p-8 rounded-3xl space-y-6">
+                            <h3 class="text-3xl font-bold text-hero-cyan">Core Concept</h3>
+                            <p class="text-gray-300 leading-relaxed">
+                                In the world of To Be Hero X, heroes aren't born—they're shaped by belief.
+                                The deeper the public's trust in a hero, the stronger that hero becomes. This unique "Trust Value" system
+                                creates a fascinating dynamic world where popularity directly translates into superhuman abilities.
+                            </p>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div v-for="info in showInfo" :key="info.label" 
+                                     class="bg-hero-dark bg-opacity-50 p-4 rounded-xl">
+                                    <div class="text-hero-pink font-semibold">{{ info.label }}</div>
+                                    <div class="text-white">{{ info.value }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-effect p-8 rounded-3xl">
+                            <h3 class="text-2xl font-bold text-hero-cyan mb-4">Plot Summary</h3>
+                            <p class="text-gray-300 leading-relaxed">
+                                The bi-annual Hero Competition determines the rankings of the top 10 heroes, based on their "Trust Values"—
+                                quantified measures of public faith. X currently holds the #1 position, but as a new competition approaches,
+                                alliances form, betrayals unfold, and the very nature of heroism is questioned.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="relative group">
+                            <img :src="overviewImage" alt="Overview" 
+                                 class="w-full h-auto rounded-3xl shadow-2xl group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-hero-gradient opacity-0 group-hover:opacity-20 rounded-3xl transition-opacity duration-500"></div>
+                        </div>
+                        
+                        <div class="glass-effect p-6 rounded-2xl">
+                            <h4 class="text-xl font-bold text-hero-pink mb-3">Trust Level</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span>Audience Score</span>
+                                    <span>{{ audienceScore }}%</span>
+                                </div>
+                                <div class="bg-hero-gray rounded-full h-3 overflow-hidden">
+                                    <div class="bg-hero-gradient h-full rounded-full transition-all duration-1000" 
+                                         :style="{width: audienceScore + '%'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Heroes Section -->
+        <section id="heroes" class="py-24 lg:py-32 bg-hero-dark relative">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <h2 class="text-5xl lg:text-6xl font-black bg-hero-gradient bg-clip-text text-transparent mb-6">
+                        Hero Rankings
+                    </h2>
+                    <p class="text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">Meet the elite heroes ranked by public trust</p>
+                </div>
+                
+                <!-- Filter Tabs -->
+                <div class="flex justify-center mb-16">
+                    <div class="glass-effect p-3 rounded-2xl">
+                        <div class="flex flex-wrap gap-2 justify-center">
+                            <button v-for="filter in heroFilters" :key="filter.key"
+                                    @click="setHeroFilter(filter.key)"
+                                    :class="[
+                                        'px-8 py-4 rounded-xl font-semibold transition-all duration-300',
+                                        currentHeroFilter === filter.key 
+                                            ? 'bg-hero-red text-white shadow-lg' 
+                                            : 'text-gray-400 hover:text-white hover:bg-hero-red hover:bg-opacity-30'
+                                    ]">
+                                {{ filter.label }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Heroes Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10">
+                    <div v-for="hero in filteredHeroes" :key="hero.rank" 
+                         @click="openHeroModal(hero)"
+                         class="hero-card glass-effect p-8 rounded-3xl cursor-pointer group">
+                        
+                        <div class="relative mb-8">
+                            <div class="absolute -top-3 -right-3 bg-hero-gradient text-white px-4 py-2 rounded-full text-sm font-bold z-10 shadow-lg">
+                                #{{ hero.rank }}
+                            </div>
+                            
+                            <div class="w-36 h-36 lg:w-40 lg:h-40 mx-auto bg-hero-gradient rounded-full p-1 group-hover:scale-110 transition-transform duration-300 shadow-xl">
+                                <div v-if="hero.image" class="w-full h-full rounded-full overflow-hidden">
+                                    <img :src="hero.image" :alt="hero.englishName" 
+                                         class="w-full h-full object-cover">
+                                </div>
+                                <div v-else class="w-full h-full bg-hero-dark rounded-full flex items-center justify-center text-4xl font-black text-white">
+                                    {{ hero.englishName.charAt(0) }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center space-y-4">
+                            <h3 class="text-2xl lg:text-3xl font-bold text-hero-cyan">{{ hero.englishName }}</h3>
+                            <div class="text-hero-pink font-semibold text-lg">
+                                {{ hero.chineseName }} • {{ hero.pinyin }}
+                            </div>
+                            <p class="text-gray-400 text-sm lg:text-base">{{ hero.title }}</p>
+                            
+                            <div class="bg-hero-gray rounded-full p-3 mt-2">
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="font-medium">Trust</span>
+                                    <span class="font-bold">{{ hero.trustLevel }}%</span>
+                                </div>
+                                <div class="bg-hero-dark rounded-full h-3 overflow-hidden">
+                                    <div class="bg-hero-gradient h-full rounded-full transition-all duration-1000 shadow-inner" 
+                                         :style="{width: hero.trustLevel + '%'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hero Modal -->
+        <div v-if="selectedHero" @click="closeHeroModal" 
+             class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+            <div @click.stop class="glass-effect max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-3xl">
+                <div class="relative p-8">
+                    <button @click="closeHeroModal" 
+                            class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="text-center">
+                                <div class="w-48 h-48 mx-auto bg-hero-gradient rounded-full p-2 mb-6">
+                                    <div v-if="selectedHero.image" class="w-full h-full rounded-full overflow-hidden">
+                                        <img :src="selectedHero.image" :alt="selectedHero.englishName" 
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                    <div v-else class="w-full h-full bg-hero-dark rounded-full flex items-center justify-center text-6xl font-black text-white">
+                                        {{ selectedHero.englishName.charAt(0) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-hero-gradient text-white px-4 py-2 rounded-full text-lg font-bold inline-block mb-4">
+                                    Hero Rank #{{ selectedHero.rank }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <h3 class="text-4xl font-black text-hero-cyan mb-2">{{ selectedHero.englishName }}</h3>
+                                <div class="text-2xl text-hero-pink font-bold">
+                                    {{ selectedHero.chineseName }} • {{ selectedHero.pinyin }}
+                                </div>
+                                <p class="text-xl text-gray-400 mt-2">{{ selectedHero.title }}</p>
+                            </div>
+                            
+                            <p class="text-gray-300 leading-relaxed">{{ selectedHero.description }}</p>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-hero-cyan font-semibold">Trust Level</span>
+                                        <span>{{ selectedHero.trustLevel }}%</span>
+                                    </div>
+                                    <div class="bg-hero-gray rounded-full h-3 overflow-hidden">
+                                        <div class="bg-hero-gradient h-full rounded-full transition-all duration-1000" 
+                                             :style="{width: selectedHero.trustLevel + '%'}"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between mb-2">
+                                        <span class="text-hero-pink font-semibold">Combat Power</span>
+                                        <span>{{ selectedHero.combatPower }}%</span>
+                                    </div>
+                                    <div class="bg-hero-gray rounded-full h-3 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-hero-pink to-hero-purple h-full rounded-full transition-all duration-1000" 
+                                             :style="{width: selectedHero.combatPower + '%'}"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-hero-dark bg-opacity-50 p-4 rounded-xl text-center">
+                                    <div class="text-hero-cyan font-bold text-lg">Popularity</div>
+                                    <div class="text-white text-2xl font-black">{{ selectedHero.popularity || 'A+' }}</div>
+                                </div>
+                                <div class="bg-hero-dark bg-opacity-50 p-4 rounded-xl text-center">
+                                    <div class="text-hero-pink font-bold text-lg">Special Ability</div>
+                                    <div class="text-white text-lg">{{ selectedHero.ability || 'Special Power' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Episodes Carousel Section -->
+        <section id="episodes" class="py-20 bg-hero-light relative">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h2 class="text-5xl font-black bg-hero-gradient bg-clip-text text-transparent mb-4">
+                        Episode Highlights
+                    </h2>
+                    <p class="text-xl text-gray-400">Experience key moments from this groundbreaking work</p>
+                </div>
+                
+                <div class="relative">
+                    <div class="overflow-hidden">
+                        <div class="flex transition-transform duration-500 ease-in-out" 
+                             :style="{transform: `translateX(-${currentEpisodeSlide * 100}%)`}">
+                            <div v-for="episode in episodes" :key="episode.number" 
+                                 class="w-full flex-shrink-0 px-6 lg:px-8">
+                                <div class="glass-effect p-10 lg:p-12 rounded-3xl max-w-5xl mx-auto">
+                                    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                                        <div class="space-y-8">
+                                            <div class="flex items-center space-x-4">
+                                                <div class="bg-hero-gradient text-white px-4 py-2 rounded-full font-bold">
+                                                    Episode {{ episode.number }}
+                                                </div>
+                                                <div class="flex items-center space-x-1 text-yellow-400">
+                                                    <i class="fas fa-star"></i>
+                                                    <span class="font-bold">{{ episode.rating }}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <h3 class="text-3xl font-bold text-hero-cyan">
+                                                {{ episode.titleChinese }}
+                                            </h3>
+                                            <h4 class="text-xl text-hero-pink">{{ episode.titleEnglish }}</h4>
+                                            
+                                            <p class="text-gray-300 leading-relaxed">
+                                                {{ episode.description }}
+                                            </p>
+                                            
+                                            <div class="flex flex-wrap gap-2">
+                                                <span v-for="tag in episode.tags" :key="tag" 
+                                                      class="px-3 py-1 bg-hero-red bg-opacity-20 text-hero-pink text-sm rounded-full">
+                                                    {{ tag }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="relative">
+                                            <div class="aspect-video bg-hero-dark rounded-2xl overflow-hidden">
+                                                <img :src="episode.image" :alt="episode.titleEnglish" 
+                                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                                <div class="absolute inset-0 bg-hero-gradient opacity-0 hover:opacity-20 rounded-2xl transition-opacity duration-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Carousel Controls -->
+                    <button @click="prevEpisode" 
+                            class="absolute left-4 top-1/2 transform -translate-y-1/2 glass-effect p-3 rounded-full hover:bg-hero-red hover:bg-opacity-30 transition-all">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button @click="nextEpisode" 
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 glass-effect p-3 rounded-full hover:bg-hero-red hover:bg-opacity-30 transition-all">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    
+                    <!-- Indicators -->
+                    <div class="flex justify-center mt-8 space-x-2">
+                        <button v-for="(episode, index) in episodes" :key="index"
+                                @click="currentEpisodeSlide = index"
+                                :class="[
+                                    'w-3 h-3 rounded-full transition-all',
+                                    currentEpisodeSlide === index ? 'bg-hero-red' : 'bg-gray-600'
+                                ]"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews" class="py-24 lg:py-32 bg-hero-dark">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <h2 class="text-5xl lg:text-6xl font-black bg-hero-gradient bg-clip-text text-transparent mb-6">
+                        Critical Reception
+                    </h2>
+                    <p class="text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">Voices from critics and fans alike</p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-12 mb-16">
+                    <div class="text-center">
+                        <div class="glass-effect p-8 rounded-3xl">
+                            <div class="text-6xl font-black bg-hero-gradient bg-clip-text text-transparent mb-4">
+                                {{ criticsScore }}
+                            </div>
+                            <div class="text-xl text-hero-cyan font-bold mb-2">Critics Score</div>
+                            <div class="flex justify-center space-x-1 text-yellow-400 text-2xl">
+                                <i v-for="n in 5" :key="n" 
+                                   :class="n <= Math.floor(criticsScore/2) ? 'fas fa-star' : 'far fa-star'"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="glass-effect p-8 rounded-3xl">
+                            <div class="text-6xl font-black bg-hero-gradient bg-clip-text text-transparent mb-4">
+                                {{ fansScore }}
+                            </div>
+                            <div class="text-xl text-hero-pink font-bold mb-2">Audience Score</div>
+                            <div class="flex justify-center space-x-1 text-yellow-400 text-2xl">
+                                <i v-for="n in 5" :key="n" 
+                                   :class="n <= Math.floor(fansScore/2) ? 'fas fa-star' : 'far fa-star'"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div v-for="review in reviews" :key="review.source" 
+                         class="glass-effect p-6 rounded-2xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-xl font-bold text-hero-cyan">{{ review.source }}</h4>
+                            <div class="bg-hero-gradient text-white px-3 py-1 rounded-full font-bold">
+                                {{ review.rating }}
+                            </div>
+                        </div>
+                        <p class="text-gray-300 leading-relaxed">{{ review.comment }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="py-24 lg:py-32 bg-hero-light">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <h2 class="text-5xl lg:text-6xl font-black bg-hero-gradient bg-clip-text text-transparent mb-6">
+                        Hero Knowledge Quiz
+                    </h2>
+                    <p class="text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">Test your knowledge of the To Be Hero X universe</p>
+                </div>
+                
+                <div class="max-w-5xl mx-auto">
+                    <div v-if="!quizCompleted" class="glass-effect p-8 rounded-3xl">
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-hero-cyan font-bold">
+                                    Question {{ currentQuestionIndex + 1 }} / {{ quizQuestions.length }}
+                                </span>
+                                <span class="text-hero-pink font-bold">
+                                    Score: {{ quizScore }}
+                                </span>
+                            </div>
+                            <div class="bg-hero-gray rounded-full h-3 overflow-hidden">
+                                <div class="bg-hero-gradient h-full rounded-full transition-all duration-300" 
+                                     :style="{width: ((currentQuestionIndex + 1) / quizQuestions.length) * 100 + '%'}"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-8">
+                            <h3 class="text-2xl font-bold text-white mb-6">
+                                {{ currentQuestion.question }}
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <button v-for="(answer, index) in currentQuestion.answers" :key="index"
+                                        @click="selectAnswer(index)"
+                                        :disabled="selectedAnswer !== null"
+                                        :class="[
+                                            'w-full p-4 rounded-xl text-left transition-all duration-300',
+                                            'glass-effect hover:bg-hero-red hover:bg-opacity-20',
+                                            selectedAnswer === index && index === currentQuestion.correct 
+                                                ? 'bg-green-500 bg-opacity-30 border-2 border-green-500' 
+                                                : selectedAnswer === index && index !== currentQuestion.correct 
+                                                ? 'bg-red-500 bg-opacity-30 border-2 border-red-500'
+                                                : selectedAnswer !== null && index === currentQuestion.correct 
+                                                ? 'bg-green-500 bg-opacity-20 border border-green-500'
+                                                : 'border border-transparent'
+                                        ]">
+                                    {{ answer }}
+                                </button>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button v-if="selectedAnswer !== null" @click="nextQuestion"
+                                        class="px-8 py-4 bg-hero-gradient rounded-full font-semibold hover:scale-105 transform transition-all duration-300">
+                                    {{ currentQuestionIndex < quizQuestions.length - 1 ? 'Next' : 'View Results' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quiz Results -->
+                    <div v-else class="glass-effect p-8 rounded-3xl text-center space-y-8">
+                        <h3 class="text-4xl font-bold text-hero-cyan">Quiz Complete!</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="text-6xl font-black bg-hero-gradient bg-clip-text text-transparent">
+                                {{ Math.round((quizScore / quizQuestions.length) * 100) }}%
+                            </div>
+                            <div class="text-2xl text-hero-pink font-bold">
+                                {{ quizScore }} / {{ quizQuestions.length }} 正确
+                            </div>
+                        </div>
+                        
+                        <div class="glass-effect p-6 rounded-2xl">
+                            <h4 class="text-2xl font-bold text-hero-cyan mb-4">你的英雄等级</h4>
+                            <div class="text-4xl font-black text-white mb-2">{{ getHeroRank() }}</div>
+                            <p class="text-gray-300">{{ getHeroMessage() }}</p>
+                        </div>
+                        
+                        <button @click="restartQuiz"
+                                class="px-8 py-4 bg-hero-gradient rounded-full font-semibold hover:scale-105 transform transition-all duration-300">
+                            重新测试
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-hero-darker py-16">
+            <div class="container mx-auto px-4">
+                <div class="grid lg:grid-cols-4 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div>
+                            <h3 class="text-3xl font-black bg-hero-gradient bg-clip-text text-transparent mb-2">
+                                凸变英雄X
+                            </h3>
+                            <p class="text-gray-400 leading-relaxed">
+                                一个关于突破性国产动画系列的互动展示。
+                                体验信任创造英雄的世界。
+                            </p>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-12 h-12 glass-effect rounded-full flex items-center justify-center hover:bg-hero-red hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="w-12 h-12 glass-effect rounded-full flex items-center justify-center hover:bg-hero-red hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="w-12 h-12 glass-effect rounded-full flex items-center justify-center hover:bg-hero-red hover:bg-opacity-30 transition-all">
+                                <i class="fab fa-discord"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-bold text-hero-cyan mb-4">官方链接</h4>
+                        <ul class="space-y-2">
+                            <li><a href="https://tbhx.net/en/" class="text-gray-400 hover:text-hero-pink transition-colors">官方网站</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-hero-pink transition-colors">哔哩哔哩</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-hero-pink transition-colors">Crunchyroll</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-bold text-hero-cyan mb-4">制作信息</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li>导演: 李豪凌</li>
+                            <li>出品: 哔哩哔哩</li>
+                            <li>联合出品: Aniplex</li>
+                            <li>制作: BeDream</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                    <p>&copy; 2025 MiniMax Agent. 这是一个粉丝制作的展示页面。所有权利归各自所有者所有。</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+        
+        createApp({
+            data() {
+                return {
+                    mobileMenuOpen: false,
+                    selectedHero: null,
+                    currentHeroFilter: 'all',
+                    currentEpisodeSlide: 0,
+                    currentQuestionIndex: 0,
+                    selectedAnswer: null,
+                    quizScore: 0,
+                    quizCompleted: false,
+                    
+                    audienceScore: 91,
+                    criticsScore: 8.9,
+                    fansScore: 9.1,
+                    
+                    mainPoster: 'imgs/official_x_main.png',
+                    overviewImage: 'imgs/official_queen_main.png',
+                    
+                    navItems: [
+                        { id: 'home', name: 'Home', icon: 'fas fa-home' },
+                        { id: 'overview', name: 'Overview', icon: 'fas fa-info-circle' },
+                        { id: 'heroes', name: 'Heroes', icon: 'fas fa-users' },
+                        { id: 'episodes', name: 'Episodes', icon: 'fas fa-play' },
+                        { id: 'reviews', name: 'Reviews', icon: 'fas fa-star' },
+                        { id: 'quiz', name: 'Quiz', icon: 'fas fa-question-circle' }
+                    ],
+                    
+                    showInfo: [
+                        { label: 'Release Year', value: '2025' },
+                        { label: 'Episodes', value: '24 Episodes' },
+                        { label: 'Genre', value: 'Superhero/Action' },
+                        { label: 'Production', value: 'Bilibili×Aniplex' }
+                    ],
+                    
+                    heroFilters: [
+                        { key: 'all', label: 'All Heroes' },
+                        { key: 'top3', label: 'Top 3' },
+                        { key: 'others', label: 'Others' }
+                    ],
+                    
+                    heroes: [
+                        {
+                            rank: 1,
+                            englishName: 'X',
+                            chineseName: 'X',
+                            pinyin: 'X',
+                            title: 'The Ultimate Hero',
+                            image: 'imgs/official_chara_thumb1.jpg',
+                            description: 'The mysterious #1 hero who maintains his position through unwavering public trust. Known for his calm demeanor and incredible abilities, X represents the pinnacle of what it means to be a hero in this world.',
+                            trustLevel: 100,
+                            combatPower: 98,
+                            category: 'top3',
+                            popularity: 'SSS',
+                            ability: 'Trust Manipulation'
+                        },
+                        {
+                            rank: 2,
+                            englishName: 'Queen',
+                            chineseName: '女王',
+                            pinyin: 'Nǚ Wáng',
+                            title: 'The Royal Protector',
+                            image: 'imgs/official_chara_thumb2.jpg',
+                            description: 'A powerful hero with royal bearing and commanding presence. Queen\'s strategic mind and immense abilities have earned her the #2 position and respect from both allies and rivals.',
+                            trustLevel: 95,
+                            combatPower: 92,
+                            category: 'top3',
+                            popularity: 'SS',
+                            ability: 'Royal Authority'
+                        },
+                        {
+                            rank: 3,
+                            englishName: 'Dragon Boy',
+                            chineseName: '梁龙',
+                            pinyin: 'Liáng Lóng',
+                            title: 'The Dragon Heir',
+                            image: 'imgs/official_chara_thumb3.jpg',
+                            description: 'Young but incredibly powerful, Dragon Boy possesses abilities connected to ancient dragon magic. His rapid rise through the rankings has impressed even veteran heroes.',
+                            trustLevel: 88,
+                            combatPower: 90,
+                            category: 'top3',
+                            popularity: 'S+',
+                            ability: 'Dragon Force'
+                        },
+                        {
+                            rank: 4,
+                            englishName: 'Ghostblade',
+                            chineseName: '默杀',
+                            pinyin: 'Mò Shā',
+                            title: 'The Phantom Warrior',
+                            image: 'imgs/official_chara_thumb4.jpg',
+                            description: 'A mysterious swordsman who appears and disappears like a ghost. His blade techniques are legendary, and his enigmatic nature adds to his appeal among the public.',
+                            trustLevel: 85,
+                            combatPower: 88,
+                            category: 'others',
+                            popularity: 'S',
+                            ability: 'Phantom Swordsmanship'
+                        },
+                        {
+                            rank: 5,
+                            englishName: 'The Johnnies',
+                            chineseName: '大小强',
+                            pinyin: 'Dà Xiǎo Qiáng',
+                            title: 'The Twin Phenomenon',
+                            image: 'imgs/official_chara_thumb5.jpg',
+                            description: 'A unique duo who fight as one, The Johnnies have revolutionized team heroism. Their synchronized combat style is both beautiful and devastatingly effective.',
+                            trustLevel: 82,
+                            combatPower: 85,
+                            category: 'others',
+                            popularity: 'A+',
+                            ability: 'Twin Strike'
+                        },
+                        {
+                            rank: 6,
+                            englishName: 'Loli',
+                            chineseName: '罗莉',
+                            pinyin: 'Luó Lì',
+                            title: 'The Tiny Titan',
+                            image: 'imgs/official_chara_thumb6.jpg',
+                            description: 'Don\'t be fooled by her appearance - Loli packs incredible power in her small frame. Her cute exterior hides the heart of a fierce warrior.',
+                            trustLevel: 78,
+                            combatPower: 83,
+                            category: 'others',
+                            popularity: 'A+',
+                            ability: 'Contrast Impact'
+                        },
+                        {
+                            rank: 7,
+                            englishName: 'Lucky Cyan',
+                            chineseName: '幸运青',
+                            pinyin: 'Xìngyùn Qīng',
+                            title: 'The Fortune Fighter',
+                            image: 'imgs/official_chara_thumb7.jpg',
+                            description: 'Blessed with incredible luck, Lucky Cyan turns chance encounters into victories. His unpredictable fighting style keeps opponents constantly guessing.',
+                            trustLevel: 75,
+                            combatPower: 80,
+                            category: 'others',
+                            popularity: 'A',
+                            ability: 'Fortune Manipulation'
+                        },
+                        {
+                            rank: 8,
+                            englishName: 'Ahu',
+                            chineseName: '阿虎',
+                            pinyin: 'Ā\'Hǔ',
+                            title: 'The Loyal Guardian',
+                            image: 'imgs/official_chara_thumb8.jpg',
+                            description: 'Fan favorite Ahu is known for his unwavering loyalty and protective instincts. His character development episode is considered one of the series\' best.',
+                            trustLevel: 72,
+                            combatPower: 78,
+                            category: 'others',
+                            popularity: 'A',
+                            ability: 'Guardian Force'
+                        },
+                        {
+                            rank: 9,
+                            englishName: 'E-Soul',
+                            chineseName: '魂电',
+                            pinyin: 'Hún Diàn',
+                            title: 'The Digital Warrior',
+                            image: 'imgs/official_chara_thumb9.jpg',
+                            description: 'A hero born from the digital age, E-Soul bridges the gap between technology and traditional heroism. His cyber-enhanced abilities are cutting-edge.',
+                            trustLevel: 68,
+                            combatPower: 75,
+                            category: 'others',
+                            popularity: 'B+',
+                            ability: 'Digital Avatar'
+                        },
+                        {
+                            rank: 10,
+                            englishName: 'Nice',
+                            chineseName: '奈斯',
+                            pinyin: 'Nài Sī',
+                            title: 'The Tragic Hero',
+                            image: 'imgs/official_chara_thumb10.jpg',
+                            description: 'The series begins with Nice\'s shocking decision, setting the tone for the complex moral questions that To Be Hero X explores throughout its run.',
+                            trustLevel: 65,
+                            combatPower: 72,
+                            category: 'others',
+                            popularity: 'B',
+                            ability: 'Sacrifice Spirit'
+                        },
+                        {
+                            rank: 10,
+                            englishName: 'Lin Ling',
+                            chineseName: '林林',
+                            pinyin: 'Lín Lín',
+                            title: 'The Dedicated Producer',
+                            image: 'imgs/official_chara_thumb11.jpg',
+                            description: 'Staff at the company that produces commercials for Nice and Moon. He is worked to the bone by his employers with hardly any time off.',
+                            trustLevel: 65,
+                            combatPower: 70,
+                            category: 'others',
+                            popularity: 'B',
+                            ability: 'Production Mastery'
+                        }
+                    ],
+                    
+                    episodes: [
+                        {
+                            number: 1,
+                            titleChinese: '奈斯',
+                            titleEnglish: 'Nice',
+                            description: 'The series begins with a shocking twist as the #10 hero Nice ends his own life, setting the tone for a mystery that will unfold throughout the season.',
+                            rating: '9.2',
+                            tags: ['Premiere', 'Shocking', 'Mystery'],
+                            image: 'imgs/to_be_hero_x_episode_1_opening_scene_anime_screenshot_billboard.jpg'
+                        },
+                        {
+                            number: 8,
+                            titleChinese: '阿虎的聚光灯',
+                            titleEnglish: 'Ahu\'s Spotlight',
+                            description: 'Fan-favorite character Ahu finally gets his moment to shine in what many consider the best character development episode of the series.',
+                            rating: '9.5',
+                            tags: ['Character Development', 'Emotional', 'Fan Favorite'],
+                            image: 'imgs/to_be_hero_x_episode_8_ahu_spotlight_scene_anime_screenshot.jpg_e5'
+                        },
+                        {
+                            number: 20,
+                            titleChinese: '废墟事件',
+                            titleEnglish: 'The Ruins Incident',
+                            description: 'Nearly every character\'s storyline converges in this explosive climax that fans call "anime of the year material".',
+                            rating: '9.8',
+                            tags: ['Climax', 'Convergence', 'Epic'],
+                            image: 'imgs/to_be_hero_x_episode_20_ruins_incident_climax_anime_screenshot.jpg'
+                        },
+                        {
+                            number: 24,
+                            titleChinese: '季终',
+                            titleEnglish: 'Season Finale',
+                            description: 'The competition concludes with revelations about trust, the nature of heroism, and what it truly means to be a hero in this world.',
+                            rating: '9.7',
+                            tags: ['Finale', 'Revelations', 'Transcendent'],
+                            image: 'imgs/to_be_hero_x_episode_24_finale_scene_anime_screenshot.jpg'
+                        }
+                    ],
+                    
+                    reviews: [
+                        {
+                            source: 'Anime News Network',
+                            rating: 'A-',
+                            comment: 'To Be Hero X brings fresh innovation to the superhero genre with its unique trust-driven power system and excellent character development.'
+                        },
+                        {
+                            source: 'CBR',
+                            rating: '4.5/5',
+                            comment: 'The season finale delivers some of the best animated recap sequences ever done, followed by a satisfying conclusion that sets up exciting possibilities.'
+                        },
+                        {
+                            source: 'FandomWire',
+                            rating: '9/10',
+                            comment: 'This anime shows what it means to be a hero when even just one person believes in you. Exceptional storytelling and animation quality.'
+                        }
+                    ],
+                    
+                    quizQuestions: [
+                        {
+                            question: 'What determines a hero\'s power level in the To Be Hero X universe?',
+                            answers: [
+                                'Their physical training',
+                                'Public trust and belief',
+                                'Government ranking',
+                                'Magical artifacts'
+                            ],
+                            correct: 1
+                        },
+                        {
+                            question: 'How often is the Hero Competition held?',
+                            answers: [
+                                'Every year',
+                                'Every two years',
+                                'Every five years',
+                                'Irregularly'
+                            ],
+                            correct: 1
+                        },
+                        {
+                            question: 'What shocking event happens in the first episode?',
+                            answers: [
+                                'X loses his powers',
+                                'A new hero appears',
+                                'Nice ends his own life',
+                                'The competition is cancelled'
+                            ],
+                            correct: 2
+                        },
+                        {
+                            question: 'Which companies produced To Be Hero X?',
+                            answers: [
+                                'Studio Ghibli & Toei',
+                                'B站, Aniplex & BeDream',
+                                'Madhouse & Bones',
+                                'Sunrise & Trigger'
+                            ],
+                            correct: 1
+                        },
+                        {
+                            question: 'Which episode is considered Ahu\'s spotlight episode?',
+                            answers: [
+                                'Episode 5',
+                                'Episode 8',
+                                'Episode 12',
+                                'Episode 15'
+                            ],
+                            correct: 1
+                        }
+                    ]
+                }
+            },
+            
+            computed: {
+                filteredHeroes() {
+                    if (this.currentHeroFilter === 'all') {
+                        return this.heroes
+                    } else if (this.currentHeroFilter === 'top3') {
+                        return this.heroes.filter(hero => hero.rank <= 3)
+                    } else if (this.currentHeroFilter === 'others') {
+                        return this.heroes.filter(hero => hero.rank > 3)
+                    }
+                    return this.heroes
+                },
+                
+                currentQuestion() {
+                    return this.quizQuestions[this.currentQuestionIndex]
+                }
+            },
+            
+            methods: {
+                scrollToSection(sectionId) {
+                    const element = document.getElementById(sectionId)
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                },
+                
+                setHeroFilter(filter) {
+                    this.currentHeroFilter = filter
+                },
+                
+                openHeroModal(hero) {
+                    this.selectedHero = hero
+                    document.body.style.overflow = 'hidden'
+                },
+                
+                closeHeroModal() {
+                    this.selectedHero = null
+                    document.body.style.overflow = 'auto'
+                },
+                
+                nextEpisode() {
+                    this.currentEpisodeSlide = (this.currentEpisodeSlide + 1) % this.episodes.length
+                },
+                
+                prevEpisode() {
+                    this.currentEpisodeSlide = this.currentEpisodeSlide === 0 
+                        ? this.episodes.length - 1 
+                        : this.currentEpisodeSlide - 1
+                },
+                
+                selectAnswer(answerIndex) {
+                    this.selectedAnswer = answerIndex
+                    if (answerIndex === this.currentQuestion.correct) {
+                        this.quizScore++
+                    }
+                },
+                
+                nextQuestion() {
+                    if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
+                        this.currentQuestionIndex++
+                        this.selectedAnswer = null
+                    } else {
+                        this.quizCompleted = true
+                    }
+                },
+                
+                restartQuiz() {
+                    this.currentQuestionIndex = 0
+                    this.selectedAnswer = null
+                    this.quizScore = 0
+                    this.quizCompleted = false
+                },
+                
+                getHeroRank() {
+                    const percentage = (this.quizScore / this.quizQuestions.length) * 100
+                    if (percentage >= 80) return 'X级英雄'
+                    if (percentage >= 60) return '前五英雄'
+                    if (percentage >= 40) return '前十英雄'
+                    return '见习英雄'
+                },
+                
+                getHeroMessage() {
+                    const percentage = (this.quizScore / this.quizQuestions.length) * 100
+                    if (percentage >= 80) return '出色！您对《凸变英雄X》宇宙有深度了解。您的信任等级可以与顶级英雄媲美！'
+                    if (percentage >= 60) return '很好！您很了解《凸变英雄X》的事实。继续观看以达到精英地位！'
+                    if (percentage >= 40) return '不错！您对该系列有基本了解。是时候重新观看以提高您的英雄排名了！'
+                    return '您刚刚开始！观看《凸变英雄X》了解这个神奇的宇宙！'
+                }
+            },
+            
+            mounted() {
+                // Auto-play episode carousel
+                setInterval(() => {
+                    this.nextEpisode()
+                }, 8000)
+                
+                // Smooth scroll behavior
+                document.documentElement.style.scrollBehavior = 'smooth'
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
